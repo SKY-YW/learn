@@ -1,0 +1,185 @@
+sys_guid() 随机产生GuidID     
+
+yzb||','||xzb  逗号拼接两个字段的值
+
+greatest() 比较两个值大小，输出大的值
+
+group by 分组拼接：select studentid, listagg(subject, ',') within group(order by subject)
+  from student  group by studentid;
+
+trunc(sgrq ,'dd') 获取年月日格式的时间，精确到日
+
+Oracle 用nvl转化时，最好不要转化为""进行比较，用""比较的话不准确。
+
+格式化日期：     TO_CHAR(SYSDATE(),'yyyy-mm-dd hh24:mi:ss)
+                      或 TO_DATE(SYSDATE(),'yyyy-mm-dd hh24:mi:ss)
+
+oracle 显示年月日：
+select to_char(sysdate,'yyyy"年"mm"月"dd"日"') from dual;
+
+年份加减方法：ADD_MONTHS（）
+
+SELECT
+ SYSDATE "当前时间",
+
+ADD_MONTHS (SYSDATE, 1) "加一月",
+
+ADD_MONTHS (SYSDATE, - 1) "减一月",
+
+ADD_MONTHS (SYSDATE, 1 * 12) "加一年",
+
+ADD_MONTHS (SYSDATE, - 1 * 12) "减一年"
+
+FROM
+ dual;
+
+修改Oracle的表结构：
+
+修改表名：alter table 表名 rename to 新名
+ 
+添加字段： alter table 表名 add 字段名 字段类型
+ 
+删除字段：alter table 表名 drop column 字段名
+ 
+修改字段： alter table 表名 rename column 原字段名 to 新名;
+ 
+修改字段类型(前提:表中无数据) alter table 表名 modify 字段名 新类型;
+
+Oracle varchar类型数值排序问题:
+问题分析：
+
+排序时，因xh为varchar类型故排序时按照xh的字符从左向右依次比较。
+
+
+数据显示：1、10、11、2、3、4、5、6、7、8、9
+解决办法：
+
+利用CAST函数把该字段的值由varchar2转为int类型
+
+
+select xh from A a order by CAST(a.xh AS INTEGER);
+
+
+查询结果为：1、2、3、4、5、6、7、8、9、10、11
+
+Oracle中同时插入多条记录：
+循环into语句，用分号;隔开，在sql首尾分别加上begin，end;
+
+例子：
+begin insert into DBXXB (DBID, DBSYSTEM, DBDATE, DBCONTENT, DBUSER, DBSTATE, DBFBR, DBURL, NRID, ADUSER)
+values ('ba0b109a-cb6f-4e7c-b0e3-1bc8ed3e3b25', '16', to_date('2019-12-12','yyyy-mm-dd'), 'ceshi', '刘金凯', '未办', 'wangqiong.hdsj', 'http://10.207.32.8/show/ShowInfo.aspx?infoid=265651', '265651', 'wangqiong.hdsj');insert into DBXXB (DBID, DBSYSTEM, DBDATE, DBCONTENT, DBUSER, DBSTATE, DBFBR, DBURL, NRID, ADUSER)
+values ('0f915869-6b08-48b3-b9db-75958a85e52a', '16', to_date('2019-12-12','yyyy-mm-dd'), 'ceshi', '秦学成', '未办', 'wangqiong.hdsj', 'http://10.207.32.8/show/ShowInfo.aspx?infoid=265651', '265651', 'wangqiong.hdsj'); end;
+
+数据库数据误删恢复：
+
+用以下语句找出删除的数据：
+select * from 表名 as of timestamp to_timestamp('删除时间点','yyyy-mm-dd hh24:mi:ss')
+
+把删除的数据重新插入原表：
+insert into 表名 (select * from 表名 as of timestamp to_timestamp('删除时间点','yyyy-mm-dd hh24:mi:ss'));
+
+oracle拆分以逗号分隔的字符串为多行：
+select REGEXP_SUBSTR ('1,2,3', '[^,]+', 1,rownum)
+
+from dual connect by rownum<=LENGTH ('1,2,3') - length(regexp_replace('1,2,3', ',', ''))+1;
+
+oracle转带中文的日期：
+to_char(p.rq,'yyyy"年"mm"月"dd"日"')
+
+Oracle 11g 行列互换 pivot 和 unpivot
+
+oracle去除字段内空格、换行符
+首先我们要知道这些特殊符号的ascii定义：
+（1）制表符 chr(9) 
+（2）换行符 chr(10)
+（3）回车符 chr(13)
+ 注意：每次只能提交一个符号，如先回车再换行
+
+去除换行符、回车符：
+select translate(string,chr(13)||chr(10),',') from dual;
+
+去掉字段中间的换行符：
+update ORGANIZATION set name = replace(name,chr(10),'');
+
+
+去掉字段中间的回车符：update ORGANIZATION set name = replace(name,chr(13),'');
+
+
+去掉字段两边的空格：
+update ORGANIZATION set name = trim(name);
+
+
+
+
+去掉字段中间的空格：
+
+update ORGANIZATION set name = replace(name,' ','');
+
+oracle小于1的小数，返回值缺整数位0的解决方法：先转为字符串，再转为小数，接受到的值就正常了
+
+例：cast(to_char(cqsd, 'fm999990.99')as number(18,2))
+
+oracle查看表空间路径：
+select * from dba_data_files;
+
+Oracle为表空间增加自动扩展能力：
+alter database datafile 'd:\app\administrator\oradata\orcl\zyfdb.dbf' autoextend on next 10m maxsize unlimited;
+
+在使用数据库进行数据筛选时查询时，经常会用到一些聚合函数，如count（），sum（），max（），min（），avg（）
+
+但是我们知道如果对数据表中的某列使用这些聚合函数时，往往会出现一点问题，那就是这一列可能出现NULL值。事实上，所有的聚合函数，如果以列名为参数，那么在计算前，就已经把NULL排除在外了。
+
+
+注：聚合函数会把NULL排除在外，但Count（*）例外，并不会排除NULL；
+函数COALESCE()，其作用就是把NULL值转换为其他值 avg(COALESCE(pjdcyl,0))
+
+通过System.Data.OracleClient(需要安装Oracle客户端不需配置tnsnames.ora)
+使用客户端网络服务名连接Oracle
+
+    基于业务逻辑与数据库实体的分层需要，一般要求在不同于Oracle数据库主机的客户端机器连接和使用Oracle数据库。这种情况要么是通过C/S应用程序的客户端访问数据库的情况；要么是在B/S应用程序中，在WEB服务器端远程连接Oracle数据库服务器。
+
+    通过客户端网络服务名远程连接Oracle，要求在客户端机器中安装Oracle客户端工具（安装类型可以不必选择“管理员”模式，而只需要安装运行时支持即可，为应用程序提供基本的网络服务配置工具等）。
+
+    建立连接的语句比较简单，关键点为data source的设置。这里的data source不像SqlServer连接字串中指的是数据库名称，而是指客户端网络服务名（相关内容请参考前面有关客户端安装的文章）。对于本文的Oracle安装来说，data source对应着E:\Oracle_Client\oracle\ora92\network\admin\tnsnames.ora配置文件中的网络服务名（出于方便试验的原因，数据库与独立的客户端工具分别安装在了同一台机器的不同目录）。在具体实施连接时，将根据data source的值去该客户网络服务配置文件中查找对应项，以获取数据库服务器主机地址、端口、全局数据库名等连接信息。
+
+
+Oracle 创建用户：
+1、以sysdba的身份登录oracle
+2、查询表空间存放位置：select name from v$datafile;
+2、创建一个表空间：create tablespace sky_common datafile 'D:\APP\LENOVO\ORADATA\ORCL\sky_common.dbf' size 50M;
+3、创建用户并指定表空间：create user sky identified by sky default tablespace sky_common;
+4、赋予用户权限： grant resource,connect,dba to sky;
+
+（1）、Connect 角色
+是授予最终用户的典型权利，最基本的权利，能够连接到Oracle数据库中，并在对其他用户的表有访问权限时，做SELECT、UPDATE、INSERTT等操作。
+Alter session--修改会话；
+Create cluster--建立聚簇；
+Create database link--建立数据库连接；
+Create sequence--建立序列；
+Create session--建立会话；
+Create synonym--建立同义词；
+Create view--建立视图。 
+ 
+
+（2）、Resoure角色
+是授予开发人员的，能在自己的方案中创建表、序列、视图等。
+Create cluster--建立聚簇；
+Create procedure--建立过程；
+Create sequence—建立序列；
+Create table--建表；
+Create trigger--建立触发器；
+Create type--建立类型。
+
+
+（3）、DBA角色
+是授予系统管理员的，拥有该角色的用户就能成为系统管理员了，它拥有所有的系统权限。
+
+oracle默认密码：
+system：密码manager。
+sys密码：change_on_install。
+
+oracle连不上本地库：
+1、先把oracle服务都停了
+2、把OracleServiceORCL、OracleOraDb11g_home1TNSListener外的服务都重新启动
+3、用net manage工具查看下监听正不正常，正常的话把第二步中的两个服务重新启动下，连下数据库看能否登录
+4、监听不正常的重新配下监听
