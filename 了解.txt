@@ -1,0 +1,245 @@
+
+≥   ≤
+
+js:Nunber()函数，将值转化成数字类型的，null会转为0
+
+js:在某个日期上加减天数，调用Date对象的setDate（）函数就可以;要进行月份的加减，就调用setMonth()和getMonth（）就可以
+
+ function addDate(date,days){ 
+       var d=new Date(date); 
+       d.setDate(d.getDate()+days); 
+       var m=d.getMonth()+1; 
+       return d.getFullYear()+'-'+m+'-'+d.getDate(); 
+     } 
+
+集合拼接成字符串：
+List<string> idlist = new List<string>();
+string IDContent = string.Join(",", idlist.ToArray());
+
+将List类型转化为Json  第三方组件：Newtonsoft.Json.dll
+//转化成Json
+Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+
+//反序列化
+Newtonsoft.Json.JsonConvert.DeserializeObject<T>(string);
+
+oracle 在事务里执行多个语句时：
+以“begin”开头，“end;”结束，中间的操作语句要以分号“；”结尾
+
+mysql查看字段详情：
+
+show full fieds from 表名；
+show  full COLUMNS from  表名；    /*查看字段详情，包括comment*/
+
+full fields 和 full columns效果一样
+
+mysql：group_concat()函数
+1、功能：将group by产生的同一个分组中的值连接起来，返回一个字符串结果。
+2、语法：group_concat( [distinct] 要连接的字段 [order by 排序字段 asc/desc  ] [separator '分隔符'] )
+说明：通过使用distinct可以排除重复值；如果希望对结果中的值进行排序，可以使用order by子句；separator是一个字符串值，缺省为一个逗号。
+
+mysql group_concat截断：
+在mysql中，有个函数叫“group_concat”，平常使用可能发现不了问题，在处理大数据的时候，会发现内容被截取了，其实MYSQL内部对这个是有设置的，默认不设置的长度是1024，如果我们需要更大，就需要手工去修改
+
+详细说明如下：
+用了group_concat后，select里如果使用了limit是不起作用的.
+用group_concat连接字段的时候是有长度限制的，并不是有多少连多少。但你可以设置一下。
+使用group_concat_max_len系统变量，你可以设置允许的最大长度。
+系统默认的分隔符是逗号
+
+通过命令修改：
+SET SESSION group_concat_max_len = 10240;
+SET GLOBAL group_concat_max_len = 10240;
+
+文件上传：webuploader超时时间timeout设置：
+webuploader的默认的超时时间是：2 * 60 * 1000（2分钟）。你可以根据需要自行设置webuploder的超时时间，当然如果不设置超时时间的话，把timeout设置为0即可。
+
+具体代码如下：uploader = WebUploader.create({
+        resize: false,// 不压缩image
+        swf: '${ctx}/static/plugin/webuploader/Uploader.swf',// swf文件路径
+        server: '${ctx}/admin/order/importXls.action',// 文件接收服务端。
+        timeout: 0,
+        accept:{
+	 title: 'excel',
+	 extensions: 'xls',
+	 mimeTypes: 'application/vnd.ms-excel'
+         },
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: '#picker'
+    },2);
+
+
+iis7 https 发生413错误 未显示页面,因为请求实体过大
+
+客户端发起一个请求后，IIS会收到足以解析请求标头的数据，但不会收到整个请求实体正文，如果发现需要客户端证书时，将尝试重新协商连接；但此时客户端正等待向IIS发送请求中的其余数据。因此，如果让客户端能接受重新协商，则必须使用SSL预加载功能预加载请求实体正文，此时则可能引起默认设置值`UploadReadAheadSize`长度太小的问题。
+- 解决方案
+第一步：
+进入 `cd C:\Windows\System32\Inetsrv` 目录执行命令行
+appcmd.exe list config -section:system.webServer/serverRuntime // 查看当前设置的 UploadReadAheadSize 大小（byte）
+appcmd.exe set config -section:system.webServer/serverruntime /uploadreadaheadsize:20480000  // 这个要设置够大
+
+第二步
+
+还需要在web.config文件中更改上传文件的大小
+
+
+js根据年月，获取当前月的天数：(new Date(2019,5,0)).getDate()
+
+js相对路径写法：
+
+"/" 表示根目录开始
+"./" 表示同级目录开始
+"../" 表示上一级目录开始；
+
+js随机颜色的生成方法：随机hsla颜色
+//颜色对象，生成颜色比较鲜艳
+  function Color(){
+    this.colorAngle = Math.floor(Math.random()*360);
+    this.color = 'hsla('+ this.colorAngle +',100%,50%,1)';
+  }
+
+JSON字符串与JS对象格式转换：
+JSON字符串转变为JS对象：JSON.parse( );
+JS对象转变为JSON字符串：JSON.stringify( );
+
+发布iis时，可以不用关闭防火墙，添加端口的入站规格就行
+
+div设置float后下一个div要换行的解决办法：要清除float属性，只能使用style="clear:both"
+
+dhtmlx下拉框：选中项在文本框显示
+
+myCombo.attachEvent("onCheck", function (value,state,item) {
+                this.setChecked(this._getOption(item._optId).index, state);             
+                var value = this.getChecked();          
+                var text = this.getCheckedText();           
+                this.DOMelem_input.value = text;  
+            })
+
+//生成唯一标识
+
+function guid() {
+   
+ return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+
+var dataObj=eval("("+data+")");//转换为json对象   data：json字符串
+
+eval() 函数可计算某个字符串，并执行其中的的 JavaScript 代码。 
+eval(string)    string	必需。要计算的字符串，其中含有要计算的 JavaScript 表达式或要执行的语句。
+eval("x=10;y=20;document.write(x*y)")    //200
+
+
+鼠标移入、移出事件：onmouseover、onmouseout
+<div onmouseover="alert('显示')" onmouseout="alert('不显示')">ffffffffff</div>
+
+html5中播放一个视频只需要一个标签：
+<video src="http://sp.ntaotu.com/localhost-wordpress-phpstudy.mp4" controls="controls" width="500" height="300"></video>
+
+关于<video>标签所支持的视频格式和编码：
+
+
+MP4 = MPEG 4文件使用 H264 视频编解码器和AAC音频编解码器
+
+
+WebM = WebM 文件使用 VP8 视频编解码器和 Vorbis 音频编解码器
+
+
+Ogg = Ogg 文件使用 Theora 视频编解码器和 Vorbis音频编解码器
+
+富文本编辑器：ueditor   配置文件：config.json，下载的文件名：utf8-asp
+ 
+
+多个web.config文件加载顺序
+
+1、如果在当前运行页面所在的目录下有web.config文件，则查找是否存在所需要的节点，如果存在则返回结果，并停止下一步地查找。
+
+2、如里所在目录不存在web.config配置或者配置文件里没有所需要的节点，则查找它所在的上一级目录的配置文件中的节点，直到网站根目录。
+
+3、如果网站根目录中都不存在web.config或者所需要的配置节点，转而到“windows目录\Microsoft.NET\Framework\对应.net版本\config\web.config”中去查找。
+
+4、如果第3条中还没找到，继续到“windows目录\Microsoft.NET\Framework\对应.net版本\config\machine.config”中去查找。
+
+字体库图标网址：https://fontawesome.dashgame.com/
+
+图标图库：https://www.iconfont.cn/home/index   hanweikeji411@sina.com用户名         hanweikeji411密码
+
+视频：mp4文件格式解析
+format：视频或者音频的编码格式。
+比如aac音频的format值为mp4a。
+AVC-1/H.264视频的format值为avc1。
+
+设置html文件的字符集：防止中文乱码
+<head>  
+    <meta http-equiv="Content-Type" content="text/html"; charset="utf-8">   
+</head> 
+
+判断线程是否还在与运行： thread.IsAlive 返回是或否
+
+linq查询：(类型转换)
+ var Query = from student in students
+                       
+                 where student.Scores.Average() >= 80
+                       
+                 select new
+   stu()      {
+                            
+                    姓名 = student.Name,
+                          
+                   成绩 = student.Scores.Average()
+                  
+                 };
+      
+
+
+c# http请求写法：
+     调用接口的时候先去该接口应用的地方去看看请求文件里的参数，程序中的参数最好与Request Headers里的参数值对应上。
+       public string GetStringByUrl(string strUrl)
+        {
+            string strallstrm = "";
+            try
+            {
+                //与指定URL创建HTTP请求
+                HttpWebRequest req = WebRequest.Create(strUrl) as HttpWebRequest;
+                req.ContentType = "application/x-www-form-urlencoded;charset=UTF-8"; 
+                req.UserAgent = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)";
+                req.Accept = "*/*";
+                req.Timeout = 900000;
+                req.Method = "GET";
+                //获取对应HTTP请求的响应
+                HttpWebResponse respon = req.GetResponse() as HttpWebResponse;
+                //获取响应流
+                Stream strM = respon.GetResponseStream();
+                //对接响应流(以"GBK"字符集)
+                using (StreamReader SR = new StreamReader(strM, Encoding.GetEncoding("UTF-8")))
+                {
+                    //获取响应流的全部字符串
+                    strallstrm = SR.ReadToEnd();
+                }
+            }
+            catch (WebException ex)
+            {
+                strallstrm = ex.ToString();
+            }
+                
+            //返回网页html代码
+            return strallstrm;
+        }
+
+c# sha256加密方法：
+        /// <summary>
+        /// SHA256加密
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public string SHA256Encrypt(string str)//256加密
+        {
+            byte[] SHA256Data = Encoding.UTF8.GetBytes(str);
+            System.Security.Cryptography.SHA256 Sha256 = new System.Security.Cryptography.SHA256Managed();
+            byte[] by = Sha256.ComputeHash(SHA256Data);
+            return BitConverter.ToString(by).Replace("-", "").ToLower();
+        }
